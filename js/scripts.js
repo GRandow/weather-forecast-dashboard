@@ -92,6 +92,26 @@ function attInterface(city, hours, days) {
   console.log("PNext 5 days: ", days);
 }
 
+const searchForm = document.querySelector(".search-form");
+const cityField = document.querySelector("#local");
+
+function searchInput(evento) {
+  evento.preventDefault();
+
+  const cityTipped = cityField.value.trim();
+
+  if (cityTipped === "") {
+    alert("Please enter a city name.");
+    return;
+  }
+
+  searchWeather(cityTipped);
+  cityField.value = "";
+}
+
+// event listener for search
+searchForm.addEventListener("submit", searchInput);
+
 window.addEventListener("DOMContentLoaded", () => {
   localizationByIp();
 });
