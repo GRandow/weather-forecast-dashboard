@@ -47,7 +47,7 @@ async function searchWeatherByCoordinate(lat, lon, locationName) {
     let finalLocation = locationName;
 
     // Updates the interface
-    attInterface(finalLocation, next24Hours, next5Days);
+    attInterface(finalLocation, next24Hours, next5Days, forecastArray);
   } catch (err) {
     console.error("Error when searching weather by coordinates:", err);
   }
@@ -86,13 +86,13 @@ async function searchWeather(city) {
     );
 
     // Updates the interface
-    attInterface(locationString, next24Hours, next5Days);
+    attInterface(locationString, next24Hours, next5Days, arrayForecast);
   } catch (err) {
     console.error("Request error: ", err);
   }
 }
 
-function attInterface(locationInfo, hours, days) {
+function attInterface(locationInfo, hours, days, fullList) {
   document.querySelector("#texto_local").innerText = locationInfo;
   document.querySelector("#texto_clima").innerText =
     hours[0].weather[0].description;
@@ -125,7 +125,7 @@ function attInterface(locationInfo, hours, days) {
 
   elementIcon.classList.add(classIcon);
   renderHourlyChart(hours);
-  renderFiveDays(days);
+  renderFiveDays(days, fullList);
 }
 
 function renderHourlyChart(hours) {
@@ -185,7 +185,7 @@ function renderHourlyChart(hours) {
   });
 }
 
-function renderFiveDays(days) {
+function renderFiveDays(days, fullList) {
   const container = document.querySelector("#info_5dias");
 
   // Loop through the days array and build an array of HTML strings
@@ -200,9 +200,20 @@ function renderFiveDays(days) {
     const iconCode = currentDayData.weather[0].icon;
     const iconUrl = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
 
-    // get temperatures
-    const tempMax = Math.round(currentDayData.main.temp_max);
-    const tempMin = Math.round(currentDayData.main.temp_min);
+    // Get the date string format
+    const currentDayString = currentDayData.dt_txt.split(" ")[0];
+
+    // Filter the full list to get all blocks belonging to this day
+    const sameDayBlocks = fullList.filter((item) =>
+      item.dt_txt.startsWith(currentDayString),
+    );
+
+    // Extract all temperatures for that day
+    const allTempsOfTheDay = sameDayBlocks.map((item) => item.main.temp);
+
+    // find the absolute extremes of the day
+    const tempMin = Math.round(Math.min(...allTempsOfTheDay));
+    const tempMax = Math.round(Math.max(...allTempsOfTheDay));
 
     // return the template string
     return `
