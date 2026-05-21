@@ -260,7 +260,7 @@ body.loading {
 }
 
 #weatherinfo .results .daily_info .day {
-  font-size: 14px;
+  font-size: 20px;
   padding: 2px;
   max-width: 20%;
 }
@@ -275,8 +275,6 @@ body.loading {
 
 #weatherinfo .results .daily_info .day .daily_weather_icon {
   padding-top: 50%;
-  /* background-image: url('../img/Rain.png'); */
-  background-size: auto 60%;
   background-position: center;
   background-repeat: no-repeat;
 }
@@ -284,7 +282,7 @@ body.loading {
 #weatherinfo .results .daily_info .day .max_min_temp {
   font-weight: 400;
   color: #909090;
-  font-size: 11px;
+  font-size: 14px;
 }
 
 #texto_temperatura {
@@ -304,7 +302,10 @@ body.loading {
   }
 
   #weatherinfo .results .daily_info .day {
-    font-size: 2.5vw;
+    font-size: 16px;
+  }
+  #weatherinfo .results .daily_info .day .daily_weather_icon {
+    background-size: auto 90%;
   }
 
   #weatherinfo .results .daily_info .day {

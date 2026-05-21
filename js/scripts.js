@@ -126,6 +126,7 @@ function attInterface(locationInfo, hours, days) {
 
   elementIcon.classList.add(classIcon);
   renderHourlyChart(hours);
+  renderFiveDays(days);
 }
 
 function renderHourlyChart(hours) {
@@ -183,6 +184,41 @@ function renderHourlyChart(hours) {
       },
     ],
   });
+}
+
+function renderFiveDays(days) {
+  const container = document.querySelector("#info_5dias");
+
+  // Loop through the days array and build an array of HTML strings
+  const cardsHtml = days.map((currentDayData) => {
+    // Format day name
+    const dateMilliseconds = currentDayData.dt * 1000;
+    const dateObject = new Date(dateMilliseconds);
+
+    let dayName = dateObject.toLocaleDateString("en-US", { weekday: "long" });
+
+    // get weather icon
+    const iconCode = currentDayData.weather[0].icon;
+    const iconUrl = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+
+    // get temperatures
+    const tempMax = Math.round(currentDayData.main.temp_max);
+    const tempMin = Math.round(currentDayData.main.temp_min);
+
+    // return the template string
+    return `
+      <div class="day col">
+        <div class="day_inner">
+          <div class="dayname">${dayName}</div>
+          <div class="daily_weather_icon" style="background-image: url('${iconUrl}');"></div>
+          <div class="max_min_temp">${tempMin}° / ${tempMax}°</div>
+        </div>
+      </div>
+    `;
+  });
+
+  //Join all HTML strings together and inject them into the container
+  container.innerHTML = cardsHtml.join("");
 }
 
 const searchForm = document.querySelector(".search-form");
