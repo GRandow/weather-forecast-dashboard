@@ -39,8 +39,8 @@ async function searchWeatherByCoordinate(lat, lon, locationName) {
 
     const forecastArray = dataForecast.list;
 
-    // Filter for the next 12 hours and 5 days
-    const next12Hours = forecastArray.slice(0, 4);
+    // Filter for the next 24 hours and 5 days
+    const next24Hours = forecastArray.slice(0, 8);
     const next5Days = forecastArray.filter((item) =>
       item.dt_txt.includes("12:00:00"),
     );
@@ -48,7 +48,7 @@ async function searchWeatherByCoordinate(lat, lon, locationName) {
     let finalLocation = locationName;
 
     // Updates the interface
-    attInterface(finalLocation, next12Hours, next5Days);
+    attInterface(finalLocation, next24Hours, next5Days);
   } catch (err) {
     console.error("Error when searching weather by coordinates:", err);
   }
@@ -78,8 +78,8 @@ async function searchWeather(city) {
     const dataForecast = await fetchForecast.json();
     const arrayForecast = dataForecast.list;
 
-    // Next 12 hours of forecast
-    const next12Hours = arrayForecast.slice(0, 4);
+    // Next 24 hours of forecast
+    const next24Hours = arrayForecast.slice(0, 8);
 
     // Filter the list to get 12am of the next 5 days
     const next5Days = arrayForecast.filter((item) =>
@@ -87,7 +87,7 @@ async function searchWeather(city) {
     );
 
     // Updates the interface
-    attInterface(locationString, next12Hours, next5Days);
+    attInterface(locationString, next24Hours, next5Days);
   } catch (err) {
     console.error("Request error: ", err);
   }
@@ -125,6 +125,64 @@ function attInterface(locationInfo, hours, days) {
   const classIcon = `wi-owm-${period}-${weatherId}`;
 
   elementIcon.classList.add(classIcon);
+  renderHourlyChart(hours);
+}
+
+function renderHourlyChart(hours) {
+  // Extract and format the hours for the X axis
+  const hoursLabels = hours.map((block) => {
+    const time = block.dt_txt.split(" ")[1];
+    return time.substring(0, 5);
+  });
+
+  // Extract and round the temperatures for the Y axis
+  const targetTemperatures = hours.map((block) => Math.round(block.main.temp));
+
+  // Render the Highcharts graph inside #hourly_chart
+  Highcharts.chart("hourly_chart", {
+    chart: {
+      type: "spline",
+      backgroundColor: "transparent",
+      height: 380,
+      reflow: true,
+    },
+    title: {
+      text: null,
+    },
+    xAxis: {
+      categories: hoursLabels,
+      labels: {
+        style: { color: "#333333" },
+      },
+    },
+    yAxis: {
+      title: { text: null },
+      labels: {
+        format: "{value}°",
+        style: { color: "#333333" },
+      },
+    },
+    legend: {
+      enabled: false,
+    },
+    tooltip: {
+      valueSuffix: "°C",
+    },
+    credits: {
+      enabled: false,
+    },
+    series: [
+      {
+        name: "Temperature",
+        data: targetTemperatures,
+        color: "#4a90e2",
+        marker: {
+          enabled: true,
+          radius: 5,
+        },
+      },
+    ],
+  });
 }
 
 const searchForm = document.querySelector(".search-form");
