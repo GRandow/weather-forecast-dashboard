@@ -151,12 +151,13 @@ function renderHourlyChart(hours) {
     },
     xAxis: {
       categories: hoursLabels,
+      title: { text: "24-Hours" },
       labels: {
         style: { color: "#333333" },
       },
     },
     yAxis: {
-      title: { text: null },
+      title: { text: "Temperature ( °C )" },
       labels: {
         format: "{value}°",
         style: { color: "#333333" },
