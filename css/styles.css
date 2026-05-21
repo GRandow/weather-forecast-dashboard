@@ -28,6 +28,10 @@
   width: 100%;
 }
 
+body {
+  overflow-x: hidden;
+}
+
 body.loading {
   overflow: hidden;
 }
@@ -41,7 +45,13 @@ body.loading {
   height: 100%;
   width: 100%;
   text-align: center;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0);
+  opacity: 0.6;
+  transition: opacity 0.5s ease;
+}
+
+.refresh-loader.fade-out {
+  opacity: 0;
 }
 
 .refresh-loader svg {
@@ -286,6 +296,33 @@ body.loading {
 
 #texto_temperatura {
   padding: 0;
+}
+
+.error-container {
+  font-family: "Nunito Sans", sans-serif;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 50%;
+  gap: 10px;
+  background-color: #c0392b;
+  color: white;
+  border: 1px solid #a63124;
+  padding: 12px 20px;
+  border-radius: 8px;
+  margin: 15px auto;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.error-container.active {
+  display: flex;
+  opacity: 1;
+}
+
+.error-container i {
+  font-size: 1.3rem;
 }
 
 @media only screen and (max-width: 640px) {

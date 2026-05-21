@@ -24,6 +24,7 @@ async function localizationByIp() {
     }
   } catch (err) {
     console.error("Error when looking for IP:", err);
+    hideLoader();
     // If the request fails, load a default city to prevent an empty screen
     searchWeather("São Paulo");
   }
@@ -31,6 +32,8 @@ async function localizationByIp() {
 
 async function searchWeatherByCoordinate(lat, lon, locationName) {
   try {
+    showLoader();
+    hideError();
     const urlForecast = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`;
 
     const requestForecast = await fetch(urlForecast);
@@ -50,18 +53,22 @@ async function searchWeatherByCoordinate(lat, lon, locationName) {
     attInterface(finalLocation, next24Hours, next5Days, forecastArray);
   } catch (err) {
     console.error("Error when searching weather by coordinates:", err);
+    hideLoader();
   }
 }
 
 async function searchWeather(city) {
   try {
-    // Geocoding
+    showLoader();
+    hideError();
+
     const urlGeocoding = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(city)}&limit=1&appid=${apiKey}`;
     const fetchGeo = await fetch(urlGeocoding);
     const dataGeo = await fetchGeo.json();
 
     if (dataGeo.length === 0) {
-      alert("Could not find the city");
+      showError();
+      hideLoader();
       return;
     }
 
@@ -89,6 +96,8 @@ async function searchWeather(city) {
     attInterface(locationString, next24Hours, next5Days, arrayForecast);
   } catch (err) {
     console.error("Request error: ", err);
+    showError();
+    hideLoader();
   }
 }
 
@@ -126,6 +135,7 @@ function attInterface(locationInfo, hours, days, fullList) {
   elementIcon.classList.add(classIcon);
   renderHourlyChart(hours);
   renderFiveDays(days, fullList);
+  hideLoader();
 }
 
 function renderHourlyChart(hours) {
@@ -232,6 +242,45 @@ function renderFiveDays(days, fullList) {
   container.innerHTML = cardsHtml.join("");
 }
 
+function showLoader() {
+  const loader = document.querySelector(".refresh-loader");
+  if (loader) {
+    loader.style.display = "block";
+    setTimeout(() => {
+      loader.classList.remove("fade-out");
+    }, 10);
+  }
+}
+
+function hideLoader() {
+  const loader = document.querySelector(".refresh-loader");
+  if (loader) {
+    loader.classList.add("fade-out");
+    loader.addEventListener(
+      "transitionend",
+      function handler() {
+        loader.style.display = "none";
+        loader.removeEventListener("transitionend", handler);
+      },
+      { once: true },
+    );
+  }
+}
+
+function showError() {
+  const errorBox = document.querySelector("#error_message");
+  if (errorBox) {
+    errorBox.classList.add("active");
+  }
+}
+
+function hideError() {
+  const errorBox = document.querySelector("#error_message");
+  if (errorBox) {
+    errorBox.classList.remove("active");
+  }
+}
+
 const searchForm = document.querySelector(".search-form");
 const cityField = document.querySelector("#local");
 
@@ -241,7 +290,7 @@ function searchInput(evento) {
   const cityTipped = cityField.value.trim();
 
   if (cityTipped === "") {
-    alert("Please enter a city name.");
+    showError();
     return;
   }
 
