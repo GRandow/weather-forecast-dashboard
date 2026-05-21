@@ -171,6 +171,7 @@ body.loading {
 
 #weatherinfo .results .weather_result {
   font-size: 22px;
+  text-transform: capitalize;
   margin-bottom: 10px;
   margin-top: 0;
   color: #909090;
@@ -241,13 +242,21 @@ body.loading {
   padding: 20px 0;
 }
 
-#weatherinfo .results .weather_icon {
-  /* background-image: url('../img/Clear.png'); */
-  width: 80px;
+#weatherinfo .results .row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+#weatherinfo .results #weather_icon {
+  font-size: 4rem;
+  display: inline-block;
+  vertical-align: middle;
   margin-left: 14px;
-  background-size: auto 50%;
   background-position: center;
   background-repeat: no-repeat;
+  background-size: contain;
+  image-rendering: crisp-edges;
 }
 
 #weatherinfo .results .daily_info .day {

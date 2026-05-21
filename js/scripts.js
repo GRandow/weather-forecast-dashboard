@@ -12,26 +12,27 @@ async function localizationByIp() {
       const lat = dataUser.latitude;
       const lon = dataUser.longitude;
       const cityByIp = dataUser.city;
-
-      console.log(`Localization detected by IP: ${cityByIp} (${lat}, ${lon})`);
+      const stateByIp = dataUser.region_code;
+      const countryByIp = dataUser.country_code;
+      const locationString = `${cityByIp}, ${stateByIp} - ${countryByIp}`;
 
       // calling the API with coordinates
-      searchWeatherByCoordinate(lat, lon, cityByIp);
+      searchWeatherByCoordinate(lat, lon, locationString);
     } else {
       // Setting the default city to São Paulo
       console.warn("Could not detect IP. Using default city.");
       searchWeather("São Paulo");
     }
   } catch (err) {
-    console.error("Erro ao buscar IP:", err);
+    console.error("Error when looking for IP:", err);
     // If the request fails, load a default city to prevent an empty screen
     searchWeather("São Paulo");
   }
 }
 
-async function searchWeatherByCoordinate(lat, lon, cityName) {
+async function searchWeatherByCoordinate(lat, lon, locationName) {
   try {
-    const urlForecast = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&lang=pt_br&appid=${apiKey}`;
+    const urlForecast = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`;
 
     const requestForecast = await fetch(urlForecast);
     const dataForecast = await requestForecast.json();
@@ -44,8 +45,10 @@ async function searchWeatherByCoordinate(lat, lon, cityName) {
       item.dt_txt.includes("12:00:00"),
     );
 
+    let finalLocation = locationName;
+
     // Updates the interface
-    attInterface(cityName, next12Hours, next5Days);
+    attInterface(finalLocation, next12Hours, next5Days);
   } catch (err) {
     console.error("Error when searching weather by coordinates:", err);
   }
@@ -63,10 +66,14 @@ async function searchWeather(city) {
       return;
     }
 
-    const { lat, lon, name } = dataGeo[0];
+    const { lat, lon, name, state, country } = dataGeo[0];
+    // some countries dont return the state, so we have to check it
+    const locationString = state
+      ? `${name}, ${state} - ${country}`
+      : `${name} - ${country}`;
 
     // Next 5 days of forecast
-    const urlForecast = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&lang=pt_br&appid=${apiKey}`;
+    const urlForecast = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`;
     const fetchForecast = await fetch(urlForecast);
     const dataForecast = await fetchForecast.json();
     const arrayForecast = dataForecast.list;
@@ -80,16 +87,44 @@ async function searchWeather(city) {
     );
 
     // Updates the interface
-    attInterface(name, next12Hours, next5Days);
+    attInterface(locationString, next12Hours, next5Days);
   } catch (err) {
     console.error("Request error: ", err);
   }
 }
 
-function attInterface(city, hours, days) {
-  console.log(`--- ${city} ---`);
-  console.log("Next 12 hours: ", hours);
-  console.log("PNext 5 days: ", days);
+function attInterface(locationInfo, hours, days) {
+  document.querySelector("#texto_local").innerText = locationInfo;
+  document.querySelector("#texto_clima").innerText =
+    hours[0].weather[0].description;
+
+  const tempAtual = hours[0].main.temp;
+  document.querySelector("#texto_temperatura").innerText =
+    `${Math.round(tempAtual)}°C`;
+
+  const dailyTemp = hours.map((bloco) => bloco.main.temp);
+  const tempMin = Math.min(...dailyTemp);
+  const tempMax = Math.max(...dailyTemp);
+
+  document.querySelector("#texto_max_min").innerText =
+    `${Math.round(tempMin)}° / ${Math.round(tempMax)}°`;
+
+  // Get the weather ID and icon code (to determine day or night)
+  const weatherId = hours[0].weather[0].id;
+  const iconCode = hours[0].weather[0].icon;
+
+  // Check if the icon code ends with "d" (day) or "n" (night)
+  const period = iconCode.endsWith("d") ? "day" : "night";
+
+  const elementIcon = document.querySelector("#weather_icon");
+
+  // Clear old classes to prevent icon overlap on new searches
+  elementIcon.className = "wi";
+
+  // Build the dynamic class based on the API ID
+  const classIcon = `wi-owm-${period}-${weatherId}`;
+
+  elementIcon.classList.add(classIcon);
 }
 
 const searchForm = document.querySelector(".search-form");
