@@ -1,4 +1,3 @@
-// graph JS: https://www.highcharts.com/demo
 const apiKey = "327efba1eb178d8cb3fe604a81478a13";
 
 async function localizationByIp() {
@@ -144,7 +143,7 @@ function renderHourlyChart(hours) {
     chart: {
       type: "spline",
       backgroundColor: "transparent",
-      height: 380,
+      height: 370,
       reflow: true,
     },
     title: {

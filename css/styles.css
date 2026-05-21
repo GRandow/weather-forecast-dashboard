@@ -217,7 +217,6 @@ body.loading {
   border: 1px solid lightgrey;
   width: 100%;
   height: 400px;
-  margin-bottom: 12px;
 }
 
 #weatherinfo .results .weather_charts .info_chart {
@@ -289,13 +288,6 @@ body.loading {
   padding: 0;
 }
 
-/* **********************************************************************************************
-***********************************   MEDIA QUERIES   ******************************************* 
-********************************************************************************************** */
-
-/* Small Screens **************************************************************************** */
-/* max-width 640px ******************************************************************** */
-
 @media only screen and (max-width: 640px) {
   .global-page-container {
     width: 100%;
@@ -316,28 +308,13 @@ body.loading {
   #pesquisar input {
     font-size: 3.3vw;
   }
-} /*  End of small Screens */
-
-/*  Medium Screens ************************************************************************** */
-/* min-width 641px and max-width 1023px *********************************************** */
-
-@media only screen and (max-width: 768px) {
-  #weatherinfo .results .weather_charts .hourly_chart {
-    margin: 20px auto;
-  }
-} /*  End of Medium Screens */
-
-/*  Medium Screens ************************************************************************** */
-/* min-width 641px and max-width 1023px *********************************************** */
+}
 
 @media only screen and (min-width: 641px) and (max-width: 1023px) {
   .global-page-container {
     width: 100%;
   }
-} /*  End of Medium Screens */
-
-/*  Large Screens *************************************************************************** */
-/* min-width 1024px and max-width 1440px ********************************************** */
+}
 
 @media only screen and (min-width: 1024px) {
   .global-page-container {
@@ -348,10 +325,4 @@ body.loading {
     text-align: center;
     margin-top: 50px;
   }
-} /*  End of Large Screens */
-
-/*  Extra Large Screens ********************************************************************* */
-/* min-width 1441px ******************************************************************* */
-
-@media only screen and (min-width: 1441px) {
-} /*  End of Extra Large Screens */
+}
